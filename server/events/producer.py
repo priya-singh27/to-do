@@ -9,12 +9,12 @@ try:
     producer = KafkaProducer(
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         value_serializer=lambda v: json.dumps(v).encode('utf-8'),
-        retries=5,  # Retry if failure occurs
-        acks="all",  # Ensure message is acknowledged
-        linger_ms=500,  # Reduce batching time
-        request_timeout_ms=60000,  # Increase timeout to 60 seconds
-        max_block_ms=120000,       # Increase max block time
-        security_protocol="PLAINTEXT"
+        # retries=5,  # Retry if failure occurs
+        # acks="all",  # Ensure message is acknowledged
+        # linger_ms=500,  # Reduce batching time
+        # request_timeout_ms=60000,  # Increase timeout to 60 seconds
+        # max_block_ms=120000,       
+        # security_protocol="PLAINTEXT"
     )
 except Exception as e:
     print(f"Failed to connect to Kafka: {str(e)}")

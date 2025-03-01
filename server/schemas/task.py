@@ -1,12 +1,15 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from enum import Enum
+
 
 class TaskBase(BaseModel):
     title: str
     description: Optional[str] = None
     scheduled_time: Optional[datetime] = None
 
+    
 class TaskCreate(TaskBase):
     pass
 
