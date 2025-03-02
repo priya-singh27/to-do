@@ -1,11 +1,10 @@
-
 version: '3.8'
 
 services:
   frontend:
     build:
-      context: .
-      dockerfile: client/Dockerfile
+      context: ./client  # Change this line
+      dockerfile: Dockerfile  # Change this line
     ports:
       - "80:80"
     environment:
@@ -16,8 +15,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: server/Dockerfile
+      context: ./server  # Change this line
+      dockerfile: Dockerfile  # Change this line
     ports:
       - "8000:8000"
     environment:

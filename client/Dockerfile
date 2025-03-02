@@ -2,16 +2,16 @@ FROM node:14 as builder
 
 WORKDIR /app
 
-# Copy package files
-COPY client/package*.json ./
+# Copy package files directly (we're already in the client directory context)
+COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy project files
-COPY client/ .
+# Copy all client files (not client/client/)
+COPY . .
 
-# Build the React app (make sure this matches your package.json script)
+# Build the React app
 RUN npm run build
 
 # Use official Nginx image
@@ -21,7 +21,7 @@ FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 
 # Create a basic nginx configuration
-COPY client/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 80
