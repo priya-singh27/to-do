@@ -2,13 +2,13 @@ FROM node:14 as builder
 
 WORKDIR /app
 
-# Copy package files directly (we're already in the client directory context)
+# Copy package files
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy all client files (not client/client/)
+# Copy all client files
 COPY . .
 
 # Build the React app
@@ -20,7 +20,7 @@ FROM nginx:alpine
 # Copy the build files to Nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Create a basic nginx configuration
+# Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
