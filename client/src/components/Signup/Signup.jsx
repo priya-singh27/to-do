@@ -2,6 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 
+const base_url = import.meta.env.VITE_BACKEND_URL;
+
 function Signup({ email, password, handleEmailChange, handlePasswordChange }) {
     console.log(email, password);
     
@@ -11,7 +13,7 @@ function Signup({ email, password, handleEmailChange, handlePasswordChange }) {
         event.preventDefault();
         try {
             const response = await axios.post(
-                "http://localhost:8000/auth/register",
+                `${base_url}/auth/register`,
                 { email, password },
                 { headers: { "Content-Type": "application/json" } }
             );

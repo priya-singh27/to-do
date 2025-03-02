@@ -2,6 +2,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Login.css";
 
+const base_url = import.meta.env.VITE_BACKEND_URL;
+
 export default function Login({ email, password, handleEmailChange, handlePasswordChange }) {
     const navigate = useNavigate();
     
@@ -9,7 +11,7 @@ export default function Login({ email, password, handleEmailChange, handlePasswo
         event.preventDefault();
         try {
             const response = await axios.post(
-                "http://localhost:8000/auth/login", 
+                `${base_url}/auth/login`, 
                 new URLSearchParams({
                     'username': email,
                     'password': password

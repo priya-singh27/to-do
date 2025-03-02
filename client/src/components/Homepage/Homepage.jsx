@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Homepage.css";
 
+const base_url = import.meta.env.VITE_BACKEND_URL;
+
+
 function Homepage() {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState({
@@ -31,7 +34,7 @@ function Homepage() {
     
     const fetchUserProfile = async (token) => {
         try {
-            const response = await axios.get("http://localhost:8000/users/me", {
+            const response = await axios.get(`${base_url}/users/me`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -49,7 +52,7 @@ function Homepage() {
     const fetchTasks = async (token) => {
         try {
             setLoading(true);
-            const response = await axios.get("http://localhost:8000/tasks", {
+            const response = await axios.get(`${base_url}/tasks`, {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
@@ -103,7 +106,7 @@ function Homepage() {
             console.log("Sending task data:", taskData);
             
             const response = await axios.post(
-                "http://localhost:8000/tasks",
+                `${base_url}/tasks`,
                 taskData,
                 {
                     headers: {
@@ -150,7 +153,7 @@ function Homepage() {
         
         try {
             await axios.put(
-                `http://localhost:8000/tasks/${editingTask.id}`,
+                `${base_url}/tasks/${editingTask.id}`,
                 editingTask,
                 {
                     headers: {
@@ -176,7 +179,7 @@ function Homepage() {
         
         if (window.confirm("Are you sure you want to delete this task?")) {
             try {
-                await axios.delete(`http://localhost:8000/tasks/${taskId}`, {
+                await axios.delete(`${base_url}/tasks/${taskId}`, {
                     headers: {
                         "Authorization": `Bearer ${token}`
                     }
