@@ -2,29 +2,23 @@ from sqlalchemy.orm import Session
 from models.task import Task
 from schemas.task import TaskCreate, TaskUpdate
 from events.producer import publish_event
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Optional
 import os
-import pytz
 
-IST = pytz.timezone("Asia/Kolkata")
-KAFKA_TASK_TOPIC=os.getenv("KAFKA_TASK_TOPIC")
+# Define the IST offset (+5:30)
+IST_OFFSET = timedelta(hours=5, minutes=30)
+KAFKA_TASK_TOPIC = os.getenv("KAFKA_TASK_TOPIC")
 
 class TaskService:    
     
     def create_task(self, db: Session, task: TaskCreate, user_id: int):
-        # Check if scheduled_time is already a datetime object
-        if isinstance(task.scheduled_time, datetime):
-            scheduled_time_utc = task.scheduled_time
-            # If it's timezone naive, assume it's in IST and convert to UTC
-            if scheduled_time_utc.tzinfo is None:
-                scheduled_time_ist = IST.localize(scheduled_time_utc)
-                scheduled_time_utc = scheduled_time_ist.astimezone(pytz.utc)
-        else:
-            # If it's a string, parse it
-            scheduled_time_ist = datetime.strptime(task.scheduled_time, "%Y-%m-%dT%H:%M:%S.%fZ")
-            scheduled_time_ist = IST.localize(scheduled_time_ist)
-            scheduled_time_utc = scheduled_time_ist.astimezone(pytz.utc)
+        scheduled_time_utc = None
+        if task.scheduled_time:
+            if task.scheduled_time.tzinfo:
+                scheduled_time_utc = task.scheduled_time
+            else:
+                scheduled_time_utc = task.scheduled_time - IST_OFFSET
         
         db_task = Task(
             title=task.title,
@@ -50,20 +44,33 @@ class TaskService:
     def get_task(self, db: Session, task_id: int, user_id: int):
         task = db.query(Task).filter(Task.id == task_id, Task.user_id == user_id).first()
         if task and task.scheduled_time:
-            task.scheduled_time = task.scheduled_time.astimezone(IST)  # Convert UTC to IST
+            # Convert UTC to IST for display by adding the IST offset
+            task.scheduled_time = task.scheduled_time + IST_OFFSET
         return task
     
     def get_tasks(self, db: Session, user_id: int, skip: int = 0, limit: int = 100):
         tasks = db.query(Task).filter(Task.user_id == user_id).offset(skip).limit(limit).all()
         for task in tasks:
             if task.scheduled_time:
-                task.scheduled_time = task.scheduled_time.astimezone(IST)  # Convert UTC to IST
+                # Convert UTC to IST for display by adding the IST offset
+                task.scheduled_time = task.scheduled_time + IST_OFFSET
         return tasks
     
     def update_task(self, db: Session, task_id: int, task_update: TaskUpdate, user_id: int):
         db_task = db.query(Task).filter(Task.id == task_id, Task.user_id == user_id).first()
         if db_task:
             update_data = task_update.dict(exclude_unset=True)
+            
+            # Handle scheduled_time conversion if it's being updated
+            if 'scheduled_time' in update_data and update_data['scheduled_time']:
+                scheduled_time = update_data['scheduled_time']
+                if scheduled_time.tzinfo:
+                    # If it has timezone info, use it as is
+                    update_data['scheduled_time'] = scheduled_time
+                else:
+                    # If it's timezone naive, assume it's in IST and convert to UTC
+                    update_data['scheduled_time'] = scheduled_time - IST_OFFSET
+            
             for key, value in update_data.items():
                 setattr(db_task, key, value)
             
