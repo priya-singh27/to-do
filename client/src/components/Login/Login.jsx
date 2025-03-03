@@ -18,7 +18,7 @@ export default function Login({ email, password, handleEmailChange, handlePasswo
                 }),
                 {
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/x-www-form-urlencoded"
                     }
                 }
             );
