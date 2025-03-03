@@ -6,9 +6,9 @@ services:
       context: ./client  # Change this line
       dockerfile: Dockerfile  # Change this line
     ports:
-      - "80:80"
+      - "5173:80"
     environment:
-      - VITE_BACKEND_URL=/api
+      - VITE_BACKEND_URL=${VITE_BACKEND_URL}
     depends_on:
       - backend
     restart: unless-stopped
