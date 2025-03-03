@@ -42,7 +42,7 @@ class SchedulerService:
         """Check for due tasks and publish TaskDue events."""
         while self.running:
             # Use timezone-aware datetime for proper comparison
-            now = datetime.datetime.now(datetime.UTC)
+            now = datetime.datetime.now(datetime.timezone.utc)
             print(f"Scheduler check at {now}, tasks: {len(self.scheduled_tasks)}")
             due_tasks = []
             
