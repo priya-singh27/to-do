@@ -10,18 +10,27 @@ export default function Login({ email, password, handleEmailChange, handlePasswo
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            console.log("Login attempt with:", { username: email });
+            
+            // Create form data
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+            
+            console.log("Request URL:", `${base_url}/auth/login`);
+            console.log("Form data:", formData.toString());
+            
             const response = await axios.post(
                 `${base_url}/auth/login`, 
-                new URLSearchParams({
-                    'username': email,
-                    'password': password
-                }),
+                formData,  // Pass the URLSearchParams object directly
                 {
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
                     }
                 }
             );
+            
+            console.log("Login response:", response);
             
             if (response.status !== 200 && response.status !== 201) {
                 throw new Error("Login failed");
@@ -33,7 +42,11 @@ export default function Login({ email, password, handleEmailChange, handlePasswo
             navigate("/homepage", { replace: true });
         } catch (error) {
             if (error.response) {
-                console.error("Error during login:", error.response.data);
+                console.error("Error status:", error.response.status);
+                console.error("Error headers:", error.response.headers);
+                console.error("Error data:", error.response.data);
+            } else if (error.request) {
+                console.error("No response received:", error.request);
             } else {
                 console.error("Error during login:", error.message);
             }

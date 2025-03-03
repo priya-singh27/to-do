@@ -51,16 +51,22 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
             detail="An unexpected error occurred"
         )
 
+
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     try:
+        logger.info(f"Login attempt for username: {form_data.username}")
+        
         user = authenticate_user(db, form_data.username, form_data.password)
         if not user:
+            logger.warning(f"Failed login attempt for username: {form_data.username}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
+        
+        logger.info(f"Successful login for username: {form_data.username}")
         
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         
@@ -76,8 +82,9 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             )
         
         return {"access_token": access_token, "token_type": "bearer"}
-    except HTTPException:
-        # Re-raise HTTP exceptions as they already have appropriate status codes
+    except HTTPException as http_ex:
+        # Log HTTP exceptions with their status codes
+        logger.error(f"HTTP exception during login: {http_ex.status_code} - {http_ex.detail}")
         raise
     except Exception as e:
         logger.error(f"Unexpected error during login: {str(e)}")
