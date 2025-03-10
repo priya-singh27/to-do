@@ -5,6 +5,9 @@ from database.db import create_table
 from services.scheduler_service import SchedulerService
 from services.notification_service import NotificationService
 from fastapi.middleware.cors import CORSMiddleware
+import os
+
+# print(f'os.getenv("DATABASE_URL") ${os.getenv("DATABASE_URL")}')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,7 +38,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://23.94.253.229:5173","http://23.94.253.229", "http://localhost:80", "http://localhost"], 
+    allow_origins=["http://23.94.253.229:5173","http://23.94.253.229", "http://localhost:5173", "http://localhost"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

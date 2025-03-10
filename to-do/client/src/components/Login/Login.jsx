@@ -76,7 +76,7 @@ export default function Login({ email, password, handleEmailChange, handlePasswo
                         <label htmlFor="password">Password</label>
                         <input 
                             id="password"
-                            type="password" 
+                            type="password"
                             value={password} 
                             onChange={(e) => handlePasswordChange(e.target.value)} 
                             placeholder="Enter your password"

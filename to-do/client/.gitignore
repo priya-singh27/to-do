@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables and secret files
+.env
+
+# SQLite database file
+todo.db

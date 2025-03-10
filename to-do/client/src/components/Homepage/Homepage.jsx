@@ -7,14 +7,14 @@ const base_url = import.meta.env.VITE_BACKEND_URL;
 
 
 function Homepage() {
-    const [tasks, setTasks] = useState([]);
-    const [newTask, setNewTask] = useState({
+    const [tasks, setTasks] = useState([]);//new task
+    const [newTask, setNewTask] = useState({//update task
         title: "",
         description: "",
         scheduled_time: ""
     });
     const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(null);//to fetch user data and set it
     const [editingTask, setEditingTask] = useState(null);
     
     const navigate = useNavigate();
